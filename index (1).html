@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070C" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="METFLIX" />
+  <title>METFLIX — Stream Movies &amp; Series</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%2307070C'/%3E%3Cpath fill='%23E50914' d='M28 78V30h12l14 24 14-24h12v48H69V48L54 71 39 48v30z'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' fill='%2307070C'/%3E%3Cpath fill='%23E50914' d='M28 78V30h12l14 24 14-24h12v48H69V48L54 71 39 48v30z'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22METFLIX%22%2C%22short_name%22%3A%22METFLIX%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307070C%22%2C%22theme_color%22%3A%22%2307070C%22%7D" />
+  <style>
+    :root {
+      --bg: #07070C;
+      --surface: #11111A;
+      --card: #161622;
+      --border: #262638;
+      --crimson: #E50914;
+      --crimson-hover: #FF1E29;
+      --gold: #F5C518;
+      --text: #F8F9FC;
+      --muted: #9A9EB2;
+      --radius: 12px;
+      --header-h: 64px;
+      --bnav-h: 64px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    button, input, select, textarea { font-family: inherit; color: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Header */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+      z-index: 900; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; gap: 14px;
+      background: linear-gradient(180deg, rgba(7,7,12,0.96) 0%, rgba(7,7,12,0.72) 100%);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0;
+    }
+    .brand-logo {
+      font-size: 24px; font-weight: 900; letter-spacing: 2px; color: var(--crimson);
+      text-shadow: 0 0 18px rgba(229,9,20,0.45);
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-btn {
+      background: transparent; border: none; color: var(--muted);
+      padding: 8px 13px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .nav-btn:hover, .nav-btn.active { color: var(--text); background: rgba(255,255,255,0.08); }
+    .nav-btn.active { color: #fff; box-shadow: inset 0 -2px 0 var(--crimson); }
+
+    .header-actions {
+      display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end; max-width: 440px;
+    }
+    .search-box {
+      position: relative; flex: 1; max-width: 280px;
+    }
+    .search-box input {
+      width: 100%; height: 38px; padding: 0 36px 0 14px;
+      border-radius: 999px; border: 1px solid var(--border);
+      background: rgba(22,22,34,0.85); color: var(--text); font-size: 13.5px;
+      outline: none; transition: 0.2s;
+    }
+    .search-box input:focus { border-color: var(--crimson); background: #1A1A28; }
+    .search-clear {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; display: none;
+    }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--border); background: rgba(22,22,34,0.9);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.2s; flex-shrink: 0; color: var(--muted);
+    }
+    .icon-btn:hover { border-color: var(--crimson); color: #fff; background: rgba(229,9,20,0.16); }
+
+    /* Hero */
+    .hero {
+      position: relative; min-height: 70vh; max-height: 680px;
+      padding: calc(var(--header-h) + 32px) 24px 44px;
+      display: flex; align-items: flex-end;
+      background-size: cover; background-position: center 22%;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(7,7,12,0.95) 0%, rgba(7,7,12,0.68) 52%, rgba(7,7,12,0.22) 100%),
+                  linear-gradient(0deg, var(--bg) 0%, rgba(7,7,12,0.25) 45%, rgba(7,7,12,0.55) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2; max-width: 640px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(229,9,20,0.18); border: 1px solid rgba(229,9,20,0.5);
+      color: #ff6b72; font-size: 11px; font-weight: 800; letter-spacing: 1px;
+      padding: 4px 10px; border-radius: 999px; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: clamp(28px, 5vw, 50px); font-weight: 900; line-height: 1.08;
+      margin-bottom: 12px; text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+      font-size: 13.5px; color: var(--muted); margin-bottom: 14px; font-weight: 600;
+    }
+    .rating-pill {
+      color: var(--gold); background: rgba(245,197,24,0.12);
+      border: 1px solid rgba(245,197,24,0.35); padding: 2px 8px; border-radius: 6px;
+    }
+    .hero-overview {
+      font-size: 14.5px; line-height: 1.55; color: #D4D7E5;
+      margin-bottom: 22px; display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .hero-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 700;
+      border: none; cursor: pointer; transition: 0.2s;
+    }
+    .btn-primary { background: var(--crimson); color: #fff; box-shadow: 0 6px 20px rgba(229,9,20,0.35); }
+    .btn-primary:hover { background: var(--crimson-hover); transform: translateY(-1px); }
+    .btn-secondary { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.16); backdrop-filter: blur(8px); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+    .btn-sm { padding: 8px 14px; font-size: 12.5px; border-radius: 8px; }
+
+    /* Main Container */
+    main { padding: 10px 20px 96px; max-width: 1440px; margin: 0 auto; }
+    .section { margin-bottom: 30px; }
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
+    }
+    .section-title {
+      font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::before {
+      content: ""; width: 4px; height: 18px; border-radius: 4px; background: var(--crimson);
+    }
+    .section-sub { font-size: 12.5px; color: var(--muted); }
+
+    /* Continue Watching Row */
+    .cw-row {
+      display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .cw-card {
+      flex: 0 0 210px; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: 0.2s; position: relative;
+    }
+    .cw-card:hover { transform: translateY(-3px); border-color: var(--crimson); }
+    .cw-thumb { width: 100%; height: 118px; object-fit: cover; background: #1b1b2b; display: block; }
+    .cw-info { padding: 10px; }
+    .cw-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cw-meta { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+    .cw-bar { height: 3px; background: rgba(255,255,255,0.12); margin-top: 8px; border-radius: 3px; overflow: hidden; }
+    .cw-bar span { display: block; height: 100%; background: var(--crimson); width: 45%; }
+
+    /* Filter Chips */
+    .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 12px; }
+    .chip {
+      flex-shrink: 0; padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+      background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; transition: 0.2s;
+    }
+    .chip.active, .chip:hover { background: var(--crimson); border-color: var(--crimson); color: #fff; }
+
+    /* Media Grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+      position: relative; display: flex; flex-direction: column;
+    }
+    .card:hover { transform: translateY(-4px); border-color: var(--crimson); }
+    .poster-wrap {
+      position: relative; width: 100%; aspect-ratio: 2 / 3; background: #181826; overflow: hidden;
+    }
+    .poster-wrap img {
+      width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s;
+    }
+    .card:hover .poster-wrap img { transform: scale(1.05); }
+    .card-badge {
+      position: absolute; top: 8px; left: 8px; background: rgba(7,7,12,0.82);
+      color: #fff; font-size: 10px; font-weight: 800; padding: 3px 7px;
+      border-radius: 6px; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.14);
+    }
+    .card-rating {
+      position: absolute; top: 8px; right: 8px; background: rgba(7,7,12,0.85);
+      color: var(--gold); font-size: 11px; font-weight: 800; padding: 3px 6px; border-radius: 6px;
+    }
+    .card-body { padding: 10px; }
+    .card-title {
+      font-size: 13.5px; font-weight: 700; line-height: 1.25;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-sub { font-size: 11.5px; color: var(--muted); margin-top: 4px; display: flex; justify-content: space-between; }
+
+    .load-more-wrap { text-align: center; margin-top: 26px; }
+    .status-pill {
+      display: inline-block; font-size: 12px; color: var(--muted);
+      background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 999px;
+    }
+
+    /* Mobile Bottom Nav */
+    .bottom-nav {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--bnav-h);
+      background: rgba(11,11,18,0.96); backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border); z-index: 900;
+      grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bnav-item {
+      background: none; border: none; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px; font-size: 10.5px; font-weight: 600; cursor: pointer;
+    }
+    .bnav-item.active { color: var(--crimson); }
+
+    /* Modal / Player Overlay */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(5,5,10,0.92);
+      backdrop-filter: blur(10px); z-index: 1200;
+      display: none; align-items: center; justify-content: center; padding: 16px;
+      overflow-y: auto;
+    }
+    .overlay.open { display: flex; }
+    .player-modal {
+      width: 100%; max-width: 1060px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+      margin: auto; box-shadow: 0 24px 70px rgba(0,0,0,0.8);
+    }
+    .player-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid var(--border); gap: 12px;
+    }
+    .player-title-wrap h3 { font-size: 16.5px; font-weight: 800; }
+    .player-title-wrap p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .video-stage {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000;
+    }
+    .video-stage iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+    }
+    .player-controls {
+      padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; justify-content: space-between;
+      background: #0D0D15; border-top: 1px solid var(--border);
+    }
+    .control-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .ctrl-select {
+      background: var(--card); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 600; outline: none;
+    }
+    .ctrl-select:focus { border-color: var(--crimson); }
+    .player-desc {
+      padding: 14px 18px 18px; font-size: 13.5px; line-height: 1.55; color: #C7CADB;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Admin Modal & Dashboard */
+    .auth-card {
+      width: 100%; max-width: 400px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px; padding: 26px;
+    }
+    .auth-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+    .auth-card p { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .input-wrap { position: relative; }
+    .field input, .field select, .field textarea {
+      width: 100%; background: var(--card); border: 1px solid var(--border);
+      border-radius: 9px; padding: 10px 12px; font-size: 13.5px; color: var(--text); outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--crimson); }
+    .eye-btn {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; padding: 4px;
+    }
+    .eye-btn:hover { color: #fff; }
+
+    .admin-shell {
+      position: fixed; inset: 0; background: var(--bg); z-index: 1300;
+      display: none; grid-template-columns: 240px 1fr; overflow: hidden;
+    }
+    .admin-shell.open { display: grid; }
+    .admin-side {
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px 14px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto;
+    }
+    .admin-brand {
+      display: flex; align-items: center; gap: 8px; padding: 4px 10px 16px;
+      border-bottom: 1px solid var(--border); margin-bottom: 10px;
+    }
+    .admin-tag {
+      background: rgba(245,197,24,0.16); color: var(--gold); border: 1px solid rgba(245,197,24,0.4);
+      font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px;
+    }
+    .admin-nav-btn {
+      width: 100%; text-align: left; background: transparent; border: none;
+      color: var(--muted); padding: 10px 12px; border-radius: 9px;
+      font-size: 13.5px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .admin-nav-btn:hover, .admin-nav-btn.active { background: rgba(229,9,20,0.14); color: #fff; }
+    .admin-nav-btn.active { border-left: 3px solid var(--crimson); }
+    .admin-side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 16px; }
+
+    .admin-main { padding: 26px; overflow-y: auto; }
+    .admin-panel { display: none; max-width: 880px; }
+    .admin-panel.active { display: block; }
+    .admin-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px; margin-bottom: 18px;
+    }
+    .admin-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .admin-card .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .stat-box {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+    }
+    .stat-box span { font-size: 12px; color: var(--muted); }
+    .stat-box strong { display: block; font-size: 24px; font-weight: 900; margin-top: 4px; color: #fff; }
+
+    .toast {
+      position: fixed; bottom: 82px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1B1B2A; border: 1px solid var(--crimson); color: #fff;
+      padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      z-index: 2000; opacity: 0; pointer-events: none; transition: 0.25s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 820px) {
+      .nav-links { display: none; }
+      .bottom-nav { display: grid; }
+      .hero { min-height: 58vh; padding: calc(var(--header-h) + 20px) 16px 28px; }
+      main { padding: 8px 14px 92px; }
+      .media-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 11px; }
+      .admin-shell.open { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .admin-side { flex-direction: row; align-items: center; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid var(--border); }
+      .admin-brand, .admin-side-foot { display: none; }
+      .admin-nav-btn { width: auto; white-space: nowrap; }
+      .admin-main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Top Header -->
+  <header class="topbar">
+    <div class="brand" id="brandHomeBtn">
+      <span class="brand-logo" id="siteBrandText">METFLIX</span>
+    </div>
+    <nav class="nav-links" id="desktopNav">
+      <button class="nav-btn active" data-cat="trending">Home</button>
+      <button class="nav-btn" data-cat="movie">Movies</button>
+      <button class="nav-btn" data-cat="tv">Series</button>
+      <button class="nav-btn" data-cat="hindi">Hindi</button>
+      <button class="nav-btn" data-cat="anime">Anime</button>
+    </nav>
+    <div class="header-actions">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search movies, series..." autocomplete="off" />
+        <button class="search-clear" id="searchClearBtn" aria-label="Clear search">&times;</button>
+      </div>
+      <button class="icon-btn" id="openAdminHeaderBtn" title="Admin Panel" aria-label="Open Admin Panel">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero" id="heroBanner">
+    <div class="hero-content">
+      <div class="hero-badge" id="heroBadge">Trending #1</div>
+      <h1 class="hero-title" id="heroTitle">Loading METFLIX...</h1>
+      <div class="hero-meta" id="heroMeta"></div>
+      <p class="hero-overview" id="heroOverview"></p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" id="heroPlayBtn">&#9654; Watch Now</button>
+        <button class="btn btn-secondary" id="heroShuffleBtn">&#8635; Next Featured</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Catalog -->
+  <main>
+    <!-- Continue Watching -->
+    <section class="section" id="cwSection" style="display:none;">
+      <div class="section-head">
+        <h2 class="section-title">Continue Watching</h2>
+        <button class="btn btn-secondary btn-sm" id="clearHistoryBtn">Clear History</button>
+      </div>
+      <div class="cw-row" id="cwRow"></div>
+    </section>
+
+    <!-- Main Browse Grid -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title" id="gridHeading">Trending Now</h2>
+        <span class="section-sub" id="gridCount">Page 1 of 500</span>
+      </div>
+      <div class="chips" id="genreChips">
+        <button class="chip active" data-cat="trending">All Trending</button>
+        <button class="chip" data-cat="movie">Popular Movies</button>
+        <button class="chip" data-cat="tv">Top Series</button>
+        <button class="chip" data-cat="hindi">Hindi &amp; Bollywood</button>
+        <button class="chip" data-cat="anime">Anime</button>
+        <button class="chip" data-cat="action">Action</button>
+        <button class="chip" data-cat="scifi">Sci-Fi</button>
+        <button class="chip" data-cat="horror">Horror</button>
+      </div>
+      <div class="media-grid" id="mediaGrid"></div>
+      <div class="load-more-wrap">
+        <button class="btn btn-secondary" id="loadMoreBtn">Load More Titles</button>
+        <div style="margin-top:10px;"><span class="status-pill" id="scrollStatus">Unlimited 500-Page TMDB Feed Active</span></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav" id="mobileNav">
+    <button class="bnav-item active" data-cat="trending"><span>&#127968;</span>Home</button>
+    <button class="bnav-item" data-cat="movie"><span>&#127916;</span>Movies</button>
+    <button class="bnav-item" data-cat="tv"><span>&#128250;</span>Series</button>
+    <button class="bnav-item" data-cat="hindi"><span>&#127470;&#127475;</span>Hindi</button>
+    <button class="bnav-item" id="mobileAdminBtn"><span>&#128274;</span>Admin</button>
+  </nav>
+
+  <!-- Video Player Modal -->
+  <div class="overlay" id="playerOverlay">
+    <div class="player-modal">
+      <div class="player-header">
+        <div class="player-title-wrap">
+          <h3 id="playerTitle">Title</h3>
+          <p id="playerSub">Server: Nitro - [Multi-Lang]</p>
+        </div>
+        <button class="icon-btn" id="closePlayerBtn" aria-label="Close player">&times;</button>
+      </div>
+      <div class="video-stage">
+        <iframe id="playerIframe" allowfullscreen allow="autoplay; fullscreen; picture-in-picture; encrypted-media" referrerpolicy="origin"></iframe>
+      </div>
+      <div class="player-controls">
+        <div class="control-group">
+          <select class="ctrl-select" id="serverSelect" aria-label="Select Server"></select>
+          <select class="ctrl-select" id="langSelect" aria-label="Default Audio">
+            <option value="hi">Audio: Hindi</option>
+            <option value="en">Audio: English</option>
+            <option value="es">Audio: Spanish</option>
+            <option value="fr">Audio: French</option>
+            <option value="">Audio: Auto</option>
+          </select>
+          <select class="ctrl-select" id="seasonSelect" style="display:none;" aria-label="Season"></select>
+          <select class="ctrl-select" id="episodeSelect" style="display:none;" aria-label="Episode"></select>
+        </div>
+        <div class="control-group">
+          <button class="btn btn-secondary btn-sm" id="nextServerBtn">Switch Server</button>
+          <a class="btn btn-primary btn-sm" id="downloadStreamBtn" href="#" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="player-desc" id="playerDesc"></div>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div class="overlay" id="adminLoginOverlay">
+    <div class="auth-card">
+      <h2>METFLIX Admin</h2>
+      <p>Sign in to manage servers, catalog, branding, and permanent exports.</p>
+      <form id="adminLoginForm">
+        <div class="field">
+          <label for="loginUser">Admin Username</label>
+          <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="loginPass">Admin Password</label>
+          <div class="input-wrap">
+            <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" required style="padding-right:40px;" />
+            <button type="button" class="eye-btn" data-toggle-pass="loginPass" aria-label="Toggle password visibility"></button>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:18px;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Sign In</button>
+          <button type="button" class="btn btn-secondary" id="cancelLoginBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full Admin Dashboard -->
+  <div class="admin-shell" id="adminDashboard">
+    <aside class="admin-side">
+      <div class="admin-brand">
+        <span class="brand-logo" style="font-size:20px;">METFLIX</span>
+        <span class="admin-tag">ADMIN v9</span>
+      </div>
+      <button class="admin-nav-btn active" data-tab="tabOverview">Overview</button>
+      <button class="admin-nav-btn" data-tab="tabStream">API &amp; 17-Server Config</button>
+      <button class="admin-nav-btn" data-tab="tabCatalog">Custom Catalog</button>
+      <button class="admin-nav-btn" data-tab="tabSecurity">Branding &amp; Security</button>
+      <div class="admin-side-foot">
+        <button class="btn btn-secondary btn-sm" id="returnToSiteBtn">&larr; Return to Site</button>
+        <button class="btn btn-primary btn-sm" id="adminSignOutBtn">Sign Out</button>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <!-- Mobile Admin Top Actions -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+        <h2 style="font-size:20px; font-weight:900;">Admin Control Center</h2>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" id="returnToSiteTopBtn">Back to App</button>
+          <button class="btn btn-primary btn-sm" id="exportCleanTopBtn">Export Clean index.html</button>
+        </div>
+      </div>
+
+      <!-- Tab 1: Overview -->
+      <div class="admin-panel active" id="tabOverview">
+        <div class="stat-grid">
+          <div class="stat-box"><span>Storage Version</span><strong>v9</strong></div>
+          <div class="stat-box"><span>Active Servers</span><strong>17</strong></div>
+          <div class="stat-box"><span>Custom Titles</span><strong id="statCustomCount">0</strong></div>
+          <div class="stat-box"><span>Watch History</span><strong id="statHistoryCount">0</strong></div>
+        </div>
+        <div class="admin-card">
+          <h3>Live App Status</h3>
+          <p class="sub">Your Android APK automatically syncs its native App &amp; Player Settings directly into <code>metflix_admin_config_v9</code>.</p>
+          <p style="font-size:13.5px; color:#D4D7E5; line-height:1.6;">
+            Primary Embed Engine: <strong id="ovEngine">https://nxsha.space</strong><br/>
+            Default Server: <strong id="ovServer">Nitro - [Multi-Lang]</strong><br/>
+            Default Audio: <strong id="ovLang">hi</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Tab 2: API & Stream -->
+      <div class="admin-panel" id="tabStream">
+        <div class="admin-card">
+          <h3>TMDB &amp; Nxsha 17-Server Stream Settings</h3>
+          <p class="sub">Configure metadata fetching, default server priority, and default playback language.</p>
+          <div class="grid-2">
+            <div class="field">
+              <label for="cfgTmdbKey">TMDB v3 API Key</label>
+              <div class="input-wrap">
+                <input type="password" id="cfgTmdbKey" style="padding-right:40px;" />
+                <button type="button" class="eye-btn" data-toggle-pass="cfgTmdbKey" aria-label="Toggle API Key"></button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="cfgEmbedBase">Primary Embed Base URL</label>
+              <input type="text" id="cfgEmbedBase" placeholder="https://nxsha.space" />
+            </div>
+            <div class="field">
+              <label for="cfgServer">Default Priority Server</label>
+              <select id="cfgServer"></select>
+            </div>
+            <div class="field">
+              <label for="cfgLang">Default Audio Language</label>
+              <select id="cfgLang">
+                <option value="hi">Hindi (hi)</option>
+                <option value="en">English (en)</option>
+                <option value="es">Spanish (es)</option>
+                <option value="fr">French (fr)</option>
+                <option value="">Auto</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="saveStreamBtn">Save Stream Config</button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Custom Catalog -->
+      <div class="admin-panel" id="tabCatalog">
+        <div class="admin-card">
+          <h3>Add Custom Movie / Series</h3>
+          <p class="sub">Pinned titles appear at the top of your Trending catalog and export permanently inside <code>index.html</code>.</p>
+          <div class="grid-2">
+            <div class="field"><label for="customTitle">Title</label><input type="text" id="customTitle" placeholder="e.g. Pushpa 2" /></div>
+            <div class="field"><label for="customTmdbId">TMDB ID</label><input type="number" id="customTmdbId" placeholder="e.g. 857598" /></div>
+            <div class="field">
+              <label for="customType">Media Type</label>
+              <select id="customType"><option value="movie">Movie</option><option value="tv">TV Series</option></select>
+            </div>
+            <div class="field"><label for="customYear">Release Year</label><input type="text" id="customYear" placeholder="2025" /></div>
+          </div>
+          <div class="field"><label for="customPoster">Poster Image URL</label><input type="text" id="customPoster" placeholder="https://image.tmdb.org/t/p/w500/..." /></div>
+          <button class="btn btn-primary" id="addCustomTitleBtn">Add to Catalog</button>
+        </div>
+        <div class="admin-card">
+          <h3>Saved Custom Titles</h3>
+          <div id="customTitlesList" style="font-size:13px; color:var(--muted);">No custom titles added yet.</div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Branding & Security -->
+      <div class="admin-panel" id="tabSecurity">
+        <div class="admin-card">
+          <h3>Branding &amp; Permanent Admin Credentials</h3>
+          <p class="sub">Changes save locally immediately. Tap <strong>Export Clean index.html</strong> to bake all settings permanently into a fresh file for Netlify.</p>
+          <div class="grid-2">
+            <div class="field"><label for="cfgBrand">App Brand Name</label><input type="text" id="cfgBrand" /></div>
+            <div class="field"><label for="cfgAdminUser">Admin Username</label><input type="text" id="cfgAdminUser" /></div>
+            <div class="field">
+              <label for="cfgAdminPass">Admin Password</label>
+              <div class="input-wrap">
+                <input type="password" id="cfgAdminPass" style="padding-right:40px;" />
+                <button type="button" class="eye-btn" data-toggle-pass="cfgAdminPass" aria-label="Toggle Admin Password"></button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" id="saveSecurityBtn">Save Credentials &amp; Branding</button>
+            <button class="btn btn-secondary" id="exportCleanBtn">Export Clean index.html</button>
+            <button class="btn btn-secondary" id="resetDefaultsBtn">Reset to v9 Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'metflix_admin_config_v9';
+      const HISTORY_KEY = 'metflix_watch_history_v9';
+
+      const NXSHA_SERVERS = [
+        'Nitro - [Multi-Lang]',
+        'VidHindi',
+        'Wahalala - [Multi-Lang]',
+        'Multi-bill-[Multi-Lang]',
+        'AwsPly-[Multi-Lang]',
+        'Multi-blue-[Multi-Lang]',
+        'Xuhd-[Multi-Lang]',
+        'ZokoAnime',
+        'Citadel',
+        'CastVid',
+        'StremFx',
+        'XDrop',
+        'PureWave',
+        'Vixo',
+        'Prvibd',
+        'Stvvid',
+        'Ophn'
+      ];
+
+      /*__DEFAULT_CONFIG_START__*/
+      const DEFAULT_CONFIG = {
+        brandName: 'METFLIX',
+        adminUser: 'mrxmetflix345',
+        adminPass: '543xilftemxrM2005',
+        tmdbApiKey: 'e998728d1d80f25460911a3c500cf3b9',
+        embedBase: 'https://nxsha.space',
+        embedServer: 'Nitro - [Multi-Lang]',
+        defaultLang: 'hi',
+        defaultSub: '',
+        defaultQuality: 'Auto',
+        oneServer: false,
+        keepServerOnError: false,
+        customTitles: []
+      };
+      /*__DEFAULT_CONFIG_END__*/
+
+      // Synchronous 18-title instant fallback catalog (never blank on boot)
+      const FALLBACK_CATALOG = [
+        { id: 157336, media_type: 'movie', title: 'Interstellar', release_date: '2014-11-05', vote_average: 8.4, poster_path: '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', backdrop_path: '/xJHokMbljvjADYdit5fK5VQsXEG.jpg', overview: 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.' },
+        { id: 27205, media_type: 'movie', title: 'Inception', release_date: '2010-07-15', vote_average: 8.4, poster_path: '/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', backdrop_path: '/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg', overview: 'A skilled thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea.' },
+        { id: 155, media_type: 'movie', title: 'The Dark Knight', release_date: '2008-07-16', vote_average: 8.5, poster_path: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg', backdrop_path: '/dqK9Hag1054tghRQSqLSfrkvQnA.jpg', overview: 'Batman raises the stakes in his war on crime as the Joker wreaks havoc and chaos on the people of Gotham.' },
+        { id: 299534, media_type: 'movie', title: 'Avengers: Endgame', release_date: '2019-04-24', vote_average: 8.3, poster_path: '/or06FN3Dka5tukK1e9sl16pB3iy.jpg', backdrop_path: '/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg', overview: 'The Avengers assemble once more in order to reverse Thanos\' actions and restore balance to the universe.' },
+        { id: 634649, media_type: 'movie', title: 'Spider-Man: No Way Home', release_date: '2021-12-15', vote_average: 8.0, poster_path: '/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', backdrop_path: '/14QbnygCuTO0vl7CAFmPf1fgZfV.jpg', overview: 'Peter Parker is unmasked and asks Doctor Strange for help, tearing open the multiverse.' },
+        { id: 693134, media_type: 'movie', title: 'Dune: Part Two', release_date: '2024-02-27', vote_average: 8.2, poster_path: '/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg', backdrop_path: '/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg', overview: 'Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators.' },
+        { id: 872585, media_type: 'movie', title: 'Oppenheimer', release_date: '2023-07-19', vote_average: 8.1, poster_path: '/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', backdrop_path: '/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg', overview: 'The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.' },
+        { id: 533535, media_type: 'movie', title: 'Deadpool & Wolverine', release_date: '2024-07-24', vote_average: 7.7, poster_path: '/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', backdrop_path: '/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg', overview: 'A listless Wade Wilson toils away in civilian life until his homeworld faces an existential threat.' },
+        { id: 1396, media_type: 'tv', name: 'Breaking Bad', first_air_date: '2008-01-20', vote_average: 8.9, poster_path: '/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg', backdrop_path: '/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg', overview: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.' },
+        { id: 66732, media_type: 'tv', name: 'Stranger Things', first_air_date: '2016-07-15', vote_average: 8.6, poster_path: '/49WJfeN0moxb9IPfGn8AIqMGskD.jpg', backdrop_path: '/56v2KjBlU4XaOv9rVYEQypROD7P.jpg', overview: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments and supernatural forces.' },
+        { id: 93405, media_type: 'tv', name: 'Squid Game', first_air_date: '2021-09-17', vote_average: 7.8, poster_path: '/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg', backdrop_path: '/oaGvjB0DvdhXhOAuADfHb261ZHa.jpg', overview: 'Hundreds of cash-strapped players accept a strange invitation to compete in children\'s games for a tempting prize.' },
+        { id: 71446, media_type: 'tv', name: 'Money Heist', first_air_date: '2017-05-02', vote_average: 8.2, poster_path: '/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg', backdrop_path: '/gFZriCkpJYsApPZEF3jhxL4yLzG.jpg', overview: 'To carry out the biggest heist in history, a mysterious man called The Professor recruits a band of eight robbers.' },
+        { id: 1399, media_type: 'tv', name: 'Game of Thrones', first_air_date: '2011-04-17', vote_average: 8.4, poster_path: '/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg', backdrop_path: '/2OMB0ynKlyIenMJWI2Dy9IWT4c.jpg', overview: 'Seven noble families fight for control of the mythical land of Westeros.' },
+        { id: 94997, media_type: 'tv', name: 'House of the Dragon', first_air_date: '2022-08-21', vote_average: 8.4, poster_path: '/7QMsOTMUswlwxJP0rTTZfmz2tX2.jpg', backdrop_path: '/etj8E2o0Bud0HkONVQPjyCkIvpv.jpg', overview: 'The Targaryen dynasty is at the absolute apex of its power, with more than 15 dragons under their yoke.' },
+        { id: 37854, media_type: 'tv', name: 'One Piece', first_air_date: '1999-10-20', vote_average: 8.7, poster_path: '/cMD9Ygz11zjJzAovURpO75Qg7rT.jpg', backdrop_path: '/2rmK7mnchw9Xr3XdiTFSxTTLXqv.jpg', overview: 'Monkey D. Luffy sets off on an adventure with his pirate crew in hopes of finding the greatest treasure ever.' },
+        { id: 85937, media_type: 'tv', name: 'Demon Slayer', first_air_date: '2019-04-06', vote_average: 8.7, poster_path: '/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg', backdrop_path: '/nTvM4mhqNlHIvUkI1gVnW6XP7GG.jpg', overview: 'It is the Taisho Period in Japan. Tanjiro\'s family is slaughtered by a demon, leaving only his sister Nezuko.' },
+        { id: 579974, media_type: 'movie', title: 'RRR', release_date: '2022-03-24', vote_average: 7.8, poster_path: '/nEufeZlyAOLqO2brrs0yeF1lgXO.jpg', backdrop_path: '/i0Y0wP8H6SRgjr6QmuwbtQbS24D.jpg', overview: 'A fearless revolutionary and an officer in the British force form an unbreakable bond in 1920s India.' },
+        { id: 872906, media_type: 'movie', title: 'Jawan', release_date: '2023-09-07', vote_average: 7.2, poster_path: '/jFt1gS4BGHlK8xt76Y81Alp4dbt.jpg', backdrop_path: '/ctMserH8g2SeOAnCw5gFjdQF8mo.jpg', overview: 'A high-octane action thriller outlining the emotional journey of a man set to rectify the wrongs in society.' }
+      ];
+
+      // SafeStorage wrapper (works in sandboxed previews & private mode)
+      const _memStore = {};
+      const SafeStorage = {
+        get(k) {
+          try { return localStorage.getItem(k); } catch (e) { return _memStore[k] || null; }
+        },
+        set(k, v) {
+          try { localStorage.setItem(k, v); } catch (e) { _memStore[k] = v; }
+        }
+      };
+
+      function loadConfig() {
+        try {
+          const raw = SafeStorage.get(STORAGE_KEY);
+          if (!raw) return Object.assign({}, DEFAULT_CONFIG);
+          const parsed = JSON.parse(raw);
+          return Object.assign({}, DEFAULT_CONFIG, parsed);
+        } catch (e) {
+          return Object.assign({}, DEFAULT_CONFIG);
+        }
+      }
+
+      let config = loadConfig();
+      let state = {
+        category: 'trending',
+        query: '',
+        page: 1,
+        totalPages: 500,
+        loading: false,
+        items: [],
+        heroPool: FALLBACK_CATALOG.slice(0, 8),
+        heroIdx: 0,
+        currentMedia: null,
+        currentSeason: 1,
+        currentEpisode: 1,
+        currentServer: config.embedServer || NXSHA_SERVERS[0],
+        adminAuthed: false
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function showToast(msg) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+      }
+
+      function imgUrl(path, size) {
+        if (!path) return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="100%25" height="100%25" fill="%23181826"/%3E%3Ctext x="50%25" y="50%25" fill="%23666" text-anchor="middle" font-family="sans-serif" font-size="18"%3EMETFLIX%3C/text%3E%3C/svg%3E';
+        if (path.startsWith('http')) return path;
+        return 'https://image.tmdb.org/t/p/' + (size || 'w500') + path;
+      }
+
+      function mediaTitle(m) { return m.title || m.name || 'Untitled'; }
+      function mediaYear(m) { return (m.release_date || m.first_air_date || '2025').slice(0, 4); }
+      function mediaType(m) { return m.media_type || (m.first_air_date ? 'tv' : 'movie'); }
+
+      // Eye SVG icons
+      const EYE_OPEN = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const EYE_OFF = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+      function initEyeToggles() {
+        document.querySelectorAll('[data-toggle-pass]').forEach((btn) => {
+          btn.innerHTML = EYE_OPEN;
+          btn.onclick = () => {
+            const input = $(btn.getAttribute('data-toggle-pass'));
+            if (!input) return;
+            const isPass = input.type === 'password';
+            input.type = isPass ? 'text' : 'password';
+            btn.innerHTML = isPass ? EYE_OFF : EYE_OPEN;
+          };
+        });
+      }
+
+      function populateServerSelects() {
+        const html = NXSHA_SERVERS.map((s) => '<option value="' + s + '">' + s + '</option>').join('');
+        $('serverSelect').innerHTML = html;
+        $('cfgServer').innerHTML = html;
+        $('serverSelect').value = NXSHA_SERVERS.includes(state.currentServer) ? state.currentServer : NXSHA_SERVERS[0];
+        $('cfgServer').value = NXSHA_SERVERS.includes(config.embedServer) ? config.embedServer : NXSHA_SERVERS[0];
+      }
+
+      function applyBranding() {
+        const name = config.brandName || 'METFLIX';
+        $('siteBrandText').textContent = name;
+        document.title = name + ' — Stream Movies & Series';
+      }
+
+      // Hero rendering
+      function renderHero(item) {
+        if (!item) return;
+        const bg = imgUrl(item.backdrop_path || item.poster_path, 'w1280');
+        $('heroBanner').style.backgroundImage = 'url("' + bg + '")';
+        $('heroBadge').textContent = mediaType(item) === 'tv' ? 'Featured Series' : 'Featured Movie';
+        $('heroTitle').textContent = mediaTitle(item);
+        const rating = item.vote_average ? Number(item.vote_average).toFixed(1) : '8.0';
+        $('heroMeta').innerHTML =
+          '<span class="rating-pill">&#9733; ' + rating + '</span>' +
+          '<span>' + mediaYear(item) + '</span>' +
+          '<span>' + (mediaType(item) === 'tv' ? 'TV Series' : 'Movie') + '</span>' +
+          '<span>HD / Multi-Lang</span>';
+        $('heroOverview').textContent = item.overview || 'Stream in full HD with multi-language audio and 17 fast servers.';
+        $('heroPlayBtn').onclick = () => openPlayer(item);
+      }
+
+      // Continue Watching History
+      function getHistory() {
+        try { return JSON.parse(SafeStorage.get(HISTORY_KEY) || '[]'); } catch (e) { return []; }
+      }
+      function saveHistory(item, season, episode) {
+        let list = getHistory().filter((x) => !(String(x.id) === String(item.id) && mediaType(x) === mediaType(item)));
+        list.unshift({
+          id: item.id,
+          media_type: mediaType(item),
+          title: mediaTitle(item),
+          poster_path: item.poster_path || '',
+          backdrop_path: item.backdrop_path || '',
+          release_date: mediaYear(item),
+          vote_average: item.vote_average || 8.0,
+          overview: item.overview || '',
+          season: season || 1,
+          episode: episode || 1,
+          ts: Date.now()
+        });
+        list = list.slice(0, 16);
+        SafeStorage.set(HISTORY_KEY, JSON.stringify(list));
+        renderContinueWatching();
+      }
+      function renderContinueWatching() {
+        const list = getHistory();
+        const sec = $('cwSection');
+        const row = $('cwRow');
+        if (!list.length) { sec.style.display = 'none'; return; }
+        sec.style.display = 'block';
+        row.innerHTML = '';
+        list.forEach((item) => {
+          const card = document.createElement('div');
+          card.className = 'cw-card';
+          const sub = item.media_type === 'tv' ? ('S' + item.season + ' • E' + item.episode) : ('Movie • ' + (item.release_date || 'HD'));
+          card.innerHTML =
+            '<img class="cw-thumb" loading="lazy" src="' + imgUrl(item.backdrop_path || item.poster_path, 'w500') + '" alt="">' +
+            '<div class="cw-info">' +
+              '<div class="cw-title">' + escapeHtml(item.title) + '</div>' +
+              '<div class="cw-meta">' + sub + '</div>' +
+              '<div class="cw-bar"><span></span></div>' +
+            '</div>';
+          card.onclick = () => openPlayer(item, item.season, item.episode);
+          row.appendChild(card);
+        });
+      }
+
+      function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      function createCard(item) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const type = mediaType(item);
+        const rating = item.vote_average ? Number(item.vote_average).toFixed(1) : '7.5';
+        card.innerHTML =
+          '<div class="poster-wrap">' +
+            '<img loading="lazy" src="' + imgUrl(item.poster_path, 'w342') + '" alt="' + escapeHtml(mediaTitle(item)) + '">' +
+            '<span class="card-badge">' + (type === 'tv' ? 'TV' : 'HD') + '</span>' +
+            '<span class="card-rating">&#9733; ' + rating + '</span>' +
+          '</div>' +
+          '<div class="card-body">' +
+            '<div class="card-title">' + escapeHtml(mediaTitle(item)) + '</div>' +
+            '<div class="card-sub"><span>' + mediaYear(item) + '</span><span>' + (type === 'tv' ? 'Series' : 'Movie') + '</span></div>' +
+          '</div>';
+        card.onclick = () => openPlayer(item);
+        return card;
+      }
+
+      function renderGrid(items, append) {
+        const grid = $('mediaGrid');
+        if (!append) grid.innerHTML = '';
+        const frag = document.createDocumentFragment();
+        items.forEach((m) => frag.appendChild(createCard(m)));
+        grid.appendChild(frag);
+      }
+
+      function buildTmdbEndpoint(cat, page, query) {
+        const key = encodeURIComponent(config.tmdbApiKey || DEFAULT_CONFIG.tmdbApiKey);
+        const base = 'https://api.themoviedb.org/3';
+        if (query) {
+          return base + '/search/multi?api_key=' + key + '&query=' + encodeURIComponent(query) + '&page=' + page + '&include_adult=false';
+        }
+        switch (cat) {
+          case 'movie': return base + '/discover/movie?api_key=' + key + '&sort_by=popularity.desc&page=' + page;
+          case 'tv': return base + '/discover/tv?api_key=' + key + '&sort_by=popularity.desc&page=' + page;
+          case 'hindi': return base + '/discover/movie?api_key=' + key + '&with_original_language=hi&sort_by=popularity.desc&page=' + page;
+          case 'anime': return base + '/discover/tv?api_key=' + key + '&with_genres=16&with_original_language=ja&sort_by=popularity.desc&page=' + page;
+          case 'action': return base + '/discover/movie?api_key=' + key + '&with_genres=28&sort_by=popularity.desc&page=' + page;
+          case 'scifi': return base + '/discover/movie?api_key=' + key + '&with_genres=878&sort_by=popularity.desc&page=' + page;
+          case 'horror': return base + '/discover/movie?api_key=' + key + '&with_genres=27&sort_by=popularity.desc&page=' + page;
+          default: return base + '/trending/all/week?api_key=' + key + '&page=' + page;
+        }
+      }
+
+      const CAT_LABELS = {
+        trending: 'Trending Now',
+        movie: 'Popular Movies',
+        tv: 'Top TV Series',
+        hindi: 'Hindi & Bollywood',
+        anime: 'Anime Series',
+        action: 'Action Movies',
+        scifi: 'Sci-Fi Movies',
+        horror: 'Horror Movies'
+      };
+
+      async function fetchCatalog(reset) {
+        if (state.loading) return;
+        if (reset) {
+          state.page = 1;
+          state.items = [];
+        } else if (state.page > Math.min(state.totalPages, 500)) {
+          return;
+        }
+        state.loading = true;
+        $('loadMoreBtn').textContent = 'Loading...';
+
+        try {
+          const url = buildTmdbEndpoint(state.category, state.page, state.query);
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('TMDB ' + res.status);
+          const data = await res.json();
+          let results = (data.results || []).filter((x) => x.media_type !== 'person' && (x.poster_path || x.backdrop_path));
+          if (state.category === 'movie' || state.category === 'hindi' || state.category === 'action' || state.category === 'scifi' || state.category === 'horror') {
+            results = results.map((x) => Object.assign({ media_type: 'movie' }, x));
+          } else if (state.category === 'tv' || state.category === 'anime') {
+            results = results.map((x) => Object.assign({ media_type: 'tv' }, x));
+          }
+
+          state.totalPages = Math.min(data.total_pages || 500, 500);
+
+          if (reset) {
+            const pinned = (!state.query && state.category === 'trending' && Array.isArray(config.customTitles)) ? config.customTitles : [];
+            const combined = pinned.concat(results);
+            state.items = combined;
+            renderGrid(combined, false);
+            if (!state.query && results.length) {
+              state.heroPool = results.slice(0, 10);
+              state.heroIdx = 0;
+              renderHero(state.heroPool[0]);
+            }
+          } else {
+            state.items = state.items.concat(results);
+            renderGrid(results, true);
+          }
+
+          $('gridHeading').textContent = state.query ? ('Search: "' + state.query + '"') : (CAT_LABELS[state.category] || 'Browse');
+          $('gridCount').textContent = 'Page ' + state.page + ' of ' + state.totalPages + ' (' + state.items.length + ' titles)';
+          state.page++;
+        } catch (err) {
+          if (reset && !state.items.length) {
+            const pinned = Array.isArray(config.customTitles) ? config.customTitles : [];
+            const fb = pinned.concat(FALLBACK_CATALOG);
+            renderGrid(fb, false);
+            $('gridCount').textContent = 'Instant Offline Catalog (' + fb.length + ' titles)';
+          }
+        } finally {
+          state.loading = false;
+          $('loadMoreBtn').textContent = state.page <= state.totalPages ? 'Load More Titles' : 'End of Catalog';
+        }
+      }
+
+      // Player logic (17-Server Nxsha + Native App Settings sync)
+      function buildEmbedUrl(item, season, episode, serverName, lang) {
+        const base = (config.embedBase || 'https://nxsha.space').replace(/\/+$/, '');
+        const type = mediaType(item);
+        const path = type === 'tv'
+          ? ('/embed/tv/' + item.id + '/' + (season || 1) + '/' + (episode || 1))
+          : ('/embed/movie/' + item.id);
+        const params = new URLSearchParams();
+        if (serverName) params.set('server', serverName);
+        if (lang) params.set('lang', lang);
+        if (config.defaultSub) params.set('sub', config.defaultSub);
+        if (config.defaultQuality && config.defaultQuality !== 'Auto') params.set('quality', config.defaultQuality);
+        if (config.oneServer) params.set('oneServer', '1');
+        return base + path + '?' + params.toString();
+      }
+
+      function buildDownloadUrl(item, season, episode) {
+        const base = (config.embedBase || 'https://nxsha.space').replace(/\/+$/, '');
+        const type = mediaType(item);
+        return type === 'tv'
+          ? (base + '/dl/tv/' + item.id + '/' + (season || 1) + '/' + (episode || 1))
+          : (base + '/dl/movie/' + item.id);
+      }
+
+      function updatePlayerFrame() {
+        if (!state.currentMedia) return;
+        const srv = $('serverSelect').value || state.currentServer;
+        const lang = $('langSelect').value;
+        state.currentServer = srv;
+        const url = buildEmbedUrl(state.currentMedia, state.currentSeason, state.currentEpisode, srv, lang);
+        $('playerIframe').src = url;
+        $('downloadStreamBtn').href = buildDownloadUrl(state.currentMedia, state.currentSeason, state.currentEpisode);
+        const type = mediaType(state.currentMedia);
+        $('playerSub').textContent = (type === 'tv' ? ('S' + state.currentSeason + ' E' + state.currentEpisode + ' • ') : '') + 'Server: ' + srv;
+        saveHistory(state.currentMedia, state.currentSeason, state.currentEpisode);
+      }
+
+      function openPlayer(item, season, episode) {
+        state.currentMedia = item;
+        state.currentSeason = season || 1;
+        state.currentEpisode = episode || 1;
+        state.currentServer = config.embedServer || NXSHA_SERVERS[0];
+
+        $('playerTitle').textContent = mediaTitle(item);
+        $('playerDesc').textContent = item.overview || 'Enjoy ad-free streaming in the METFLIX Android app.';
+        $('serverSelect').value = NXSHA_SERVERS.includes(state.currentServer) ? state.currentServer : NXSHA_SERVERS[0];
+        $('langSelect').value = config.defaultLang !== undefined ? config.defaultLang : 'hi';
+
+        const isTv = mediaType(item) === 'tv';
+        $('seasonSelect').style.display = isTv ? 'inline-block' : 'none';
+        $('episodeSelect').style.display = isTv ? 'inline-block' : 'none';
+        if (isTv) {
+          let sHtml = '';
+          for (let i = 1; i <= 15; i++) sHtml += '<option value="' + i + '">Season ' + i + '</option>';
+          $('seasonSelect').innerHTML = sHtml;
+          $('seasonSelect').value = String(state.currentSeason);
+          let eHtml = '';
+          for (let j = 1; j <= 30; j++) eHtml += '<option value="' + j + '">Episode ' + j + '</option>';
+          $('episodeSelect').innerHTML = eHtml;
+          $('episodeSelect').value = String(state.currentEpisode);
+        }
+
+        $('playerOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        updatePlayerFrame();
+      }
+
+      function closePlayer() {
+        $('playerOverlay').classList.remove('open');
+        $('playerIframe').src = 'about:blank';
+        document.body.style.overflow = '';
+      }
+
+      // Admin Panel Logic
+      function openAdminGate() {
+        if (state.adminAuthed) {
+          openAdminDashboard();
+          return;
+        }
+        $('loginUser').value = '';
+        $('loginPass').value = '';
+        $('adminLoginOverlay').classList.add('open');
+      }
+
+      function openAdminDashboard() {
+        $('adminLoginOverlay').classList.remove('open');
+        $('adminDashboard').classList.add('open');
+        syncAdminFields();
+      }
+
+      function closeAdminDashboard() {
+        $('adminDashboard').classList.remove('open');
+        if (location.hash === '#admin') history.replaceState(null, '', location.pathname);
+      }
+
+      function syncAdminFields() {
+        $('cfgTmdbKey').value = config.tmdbApiKey || '';
+        $('cfgEmbedBase').value = config.embedBase || 'https://nxsha.space';
+        $('cfgServer').value = NXSHA_SERVERS.includes(config.embedServer) ? config.embedServer : NXSHA_SERVERS[0];
+        $('cfgLang').value = config.defaultLang !== undefined ? config.defaultLang : 'hi';
+        $('cfgBrand').value = config.brandName || 'METFLIX';
+        $('cfgAdminUser').value = config.adminUser || '';
+        $('cfgAdminPass').value = config.adminPass || '';
+        $('ovEngine').textContent = config.embedBase || 'https://nxsha.space';
+        $('ovServer').textContent = config.embedServer || NXSHA_SERVERS[0];
+        $('ovLang').textContent = config.defaultLang || 'Auto';
+        $('statCustomCount').textContent = String((config.customTitles || []).length);
+        $('statHistoryCount').textContent = String(getHistory().length);
+        renderCustomTitlesList();
+      }
+
+      function renderCustomTitlesList() {
+        const list = config.customTitles || [];
+        const wrap = $('customTitlesList');
+        if (!list.length) {
+          wrap.textContent = 'No custom titles added yet.';
+          return;
+        }
+        wrap.innerHTML = list.map((t, idx) =>
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">' +
+            '<span><strong>' + escapeHtml(t.title) + '</strong> (' + t.media_type.toUpperCase() + ' • ID ' + t.id + ')</span>' +
+            '<button class="btn btn-secondary btn-sm" data-del-custom="' + idx + '">Remove</button>' +
+          '</div>'
+        ).join('');
+        wrap.querySelectorAll('[data-del-custom]').forEach((b) => {
+          b.onclick = () => {
+            const idx = Number(b.getAttribute('data-del-custom'));
+            config.customTitles.splice(idx, 1);
+            SafeStorage.set(STORAGE_KEY, JSON.stringify(config));
+            syncAdminFields();
+            fetchCatalog(true);
+            showToast('Custom title removed');
+          };
+        });
+      }
+
+      // Upgraded exportCleanHtml(): bakes live config into DEFAULT_CONFIG permanently
+      function exportCleanHtml() {
+        const clone = document.documentElement.cloneNode(true);
+        // Reset overlays/modals to clean public state
+        clone.querySelectorAll('.overlay, .admin-shell').forEach((el) => el.classList.remove('open'));
+        const ifr = clone.querySelector('#playerIframe');
+        if (ifr) ifr.removeAttribute('src');
+        clone.querySelectorAll('input').forEach((inp) => { inp.value = ''; inp.removeAttribute('value'); });
+        const toast = clone.querySelector('#toast');
+        if (toast) { toast.className = 'toast'; toast.textContent = ''; }
+
+        let html = '<!DOCTYPE html>\n' + clone.outerHTML;
+        const startMarker = '/*__DEFAULT_CONFIG_START__*/';
+        const endMarker = '/*__DEFAULT_CONFIG_END__*/';
+        const sIdx = html.indexOf(startMarker);
+        const eIdx = html.indexOf(endMarker);
+        if (sIdx !== -1 && eIdx !== -1 && eIdx > sIdx) {
+          const baked = startMarker + '\n      const DEFAULT_CONFIG = ' + JSON.stringify(config, null, 2) + ';\n      ' + endMarker;
+          html = html.slice(0, sIdx) + baked + html.slice(eIdx + endMarker.length);
+        }
+
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+        showToast('Exported clean index.html with permanent settings!');
+      }
+
+      // Category switching
+      function setCategory(cat) {
+        state.category = cat;
+        state.query = '';
+        $('searchInput').value = '';
+        $('searchClearBtn').style.display = 'none';
+        document.querySelectorAll('[data-cat]').forEach((el) => {
+          el.classList.toggle('active', el.getAttribute('data-cat') === cat);
+        });
+        fetchCatalog(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Wire events
+      document.querySelectorAll('[data-cat]').forEach((btn) => {
+        btn.addEventListener('click', () => setCategory(btn.getAttribute('data-cat')));
+      });
+
+      $('brandHomeBtn').onclick = () => setCategory('trending');
+      $('heroShuffleBtn').onclick = () => {
+        if (!state.heroPool.length) return;
+        state.heroIdx = (state.heroIdx + 1) % state.heroPool.length;
+        renderHero(state.heroPool[state.heroIdx]);
+      };
+
+      let searchTimer = null;
+      $('searchInput').addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        $('searchClearBtn').style.display = val ? 'block' : 'none';
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          state.query = val;
+          fetchCatalog(true);
+        }, 380);
+      });
+      $('searchClearBtn').onclick = () => {
+        $('searchInput').value = '';
+        $('searchClearBtn').style.display = 'none';
+        state.query = '';
+        fetchCatalog(true);
+      };
+
+      $('loadMoreBtn').onclick = () => fetchCatalog(false);
+      window.addEventListener('scroll', () => {
+        if (state.loading || state.page > state.totalPages) return;
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 700) {
+          fetchCatalog(false);
+        }
+      });
+
+      $('clearHistoryBtn').onclick = () => {
+        SafeStorage.set(HISTORY_KEY, '[]');
+        renderContinueWatching();
+        showToast('Watch history cleared');
+      };
+
+      // Player controls
+      $('closePlayerBtn').onclick = closePlayer;
+      $('playerOverlay').addEventListener('click', (e) => { if (e.target === $('playerOverlay')) closePlayer(); });
+      $('serverSelect').onchange = updatePlayerFrame;
+      $('langSelect').onchange = updatePlayerFrame;
+      $('seasonSelect').onchange = (e) => { state.currentSeason = Number(e.target.value); updatePlayerFrame(); };
+      $('episodeSelect').onchange = (e) => { state.currentEpisode = Number(e.target.value); updatePlayerFrame(); };
+      $('nextServerBtn').onclick = () => {
+        const idx = (NXSHA_SERVERS.indexOf($('serverSelect').value) + 1) % NXSHA_SERVERS.length;
+        $('serverSelect').value = NXSHA_SERVERS[idx];
+        updatePlayerFrame();
+        showToast('Switched to ' + NXSHA_SERVERS[idx]);
+      };
+
+      // Admin triggers & actions
+      $('openAdminHeaderBtn').onclick = openAdminGate;
+      $('mobileAdminBtn').onclick = openAdminGate;
+      $('cancelLoginBtn').onclick = () => $('adminLoginOverlay').classList.remove('open');
+      $('adminLoginForm').onsubmit = (e) => {
+        e.preventDefault();
+        const u = $('loginUser').value.trim();
+        const p = $('loginPass').value;
+        if (u === config.adminUser && p === config.adminPass) {
+          state.adminAuthed = true;
+          openAdminDashboard();
+          showToast('Welcome back, Admin');
+        } else {
+          showToast('Invalid admin credentials');
+        }
+      };
+
+      document.querySelectorAll('.admin-nav-btn').forEach((btn) => {
+        btn.onclick = () => {
+          document.querySelectorAll('.admin-nav-btn').forEach((b) => b.classList.remove('active'));
+          document.querySelectorAll('.admin-panel').forEach((p) => p.classList.remove('active'));
+          btn.classList.add('active');
+          $(btn.getAttribute('data-tab')).classList.add('active');
+        };
+      });
+
+      $('returnToSiteBtn').onclick = closeAdminDashboard;
+      $('returnToSiteTopBtn').onclick = closeAdminDashboard;
+      $('adminSignOutBtn').onclick = () => { state.adminAuthed = false; closeAdminDashboard(); showToast('Signed out'); };
+
+      $('saveStreamBtn').onclick = () => {
+        config.tmdbApiKey = $('cfgTmdbKey').value.trim() || DEFAULT_CONFIG.tmdbApiKey;
+        config.embedBase = $('cfgEmbedBase').value.trim() || 'https://nxsha.space';
+        config.embedServer = $('cfgServer').value;
+        config.defaultLang = $('cfgLang').value;
+        SafeStorage.set(STORAGE_KEY, JSON.stringify(config));
+        syncAdminFields();
+        showToast('Stream configuration saved');
+      };
+
+      $('addCustomTitleBtn').onclick = () => {
+        const title = $('customTitle').value.trim();
+        const id = Number($('customTmdbId').value.trim());
+        const type = $('customType').value;
+        const year = $('customYear').value.trim() || '2025';
+        const poster = $('customPoster').value.trim();
+        if (!title || !id) { showToast('Enter both Title and TMDB ID'); return; }
+        config.customTitles = config.customTitles || [];
+        config.customTitles.unshift({
+          id, media_type: type, title, release_date: year + '-01-01',
+          vote_average: 8.5, poster_path: poster, backdrop_path: poster,
+          overview: 'Added via METFLIX Admin Panel.'
+        });
+        SafeStorage.set(STORAGE_KEY, JSON.stringify(config));
+        $('customTitle').value = ''; $('customTmdbId').value = ''; $('customPoster').value = '';
+        syncAdminFields();
+        fetchCatalog(true);
+        showToast('Added "' + title + '" to catalog');
+      };
+
+      $('saveSecurityBtn').onclick = () => {
+        const b = $('cfgBrand').value.trim();
+        const u = $('cfgAdminUser').value.trim();
+        const p = $('cfgAdminPass').value;
+        if (!u || !p) { showToast('Username and password cannot be empty'); return; }
+        config.brandName = b || 'METFLIX';
+        config.adminUser = u;
+        config.adminPass = p;
+        SafeStorage.set(STORAGE_KEY, JSON.stringify(config));
+        applyBranding();
+        showToast('Credentials & branding saved (Export to make permanent)');
+      };
+
+      $('exportCleanBtn').onclick = exportCleanHtml;
+      $('exportCleanTopBtn').onclick = exportCleanHtml;
+      $('resetDefaultsBtn').onclick = () => {
+        config = Object.assign({}, DEFAULT_CONFIG);
+        SafeStorage.set(STORAGE_KEY, JSON.stringify(config));
+        applyBranding();
+        syncAdminFields();
+        fetchCatalog(true);
+        showToast('Reset to METFLIX v9 defaults');
+      };
+
+      // Boot sequence (synchronous instant render first, then live TMDB)
+      initEyeToggles();
+      populateServerSelects();
+      applyBranding();
+      renderHero(FALLBACK_CATALOG[0]);
+      renderGrid((config.customTitles || []).concat(FALLBACK_CATALOG), false);
+      renderContinueWatching();
+      fetchCatalog(true);
+
+      if (location.hash === '#admin') openAdminGate();
+      window.addEventListener('hashchange', () => {
+        if (location.hash === '#admin') openAdminGate();
+      });
+    })();
+  </script>
+</body>
+</html>
